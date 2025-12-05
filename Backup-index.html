@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Debt Command Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #f9fafb;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+    .card {
+      background: #111827;
+      border-radius: 0.75rem;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #1f2937;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .pill {
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #1f2937;
+      color: #9ca3af;
+    }
+    label {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    input, select, button, textarea {
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border-radius: 0.5rem;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      box-sizing: border-box;
+      margin-bottom: 0.6rem;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 1px;
+      border-color: #3b82f6;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .col-3 { flex: 1 1 140px; }
+    .col-4 { flex: 1 1 180px; }
+    .col-6 { flex: 1 1 260px; }
+    .col-12 { flex: 1 1 100%; }
+
+    button.primary {
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.9rem;
+      background: #3b82f6;
+      color: #f9fafb;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button.primary:hover {
+      background: #2563eb;
+    }
+    button.secondary {
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      background: #111827;
+      color: #9ca3af;
+      border: 1px solid #374151;
+      cursor: pointer;
+    }
+    button.secondary:hover {
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .tab-button {
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .tab-button.active {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: #f9fafb;
+    }
+    .hidden { display: none; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .stat {
+      padding: 0.7rem 0.8rem;
+      background: #020617;
+      border-radius: 0.6rem;
+      border: 1px solid #1f2937;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #6b7280;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.25rem;
+    }
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+    .stat-sub {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.2rem;
+    }
+    .stat-value.positive { color: #22c55e; }
+    .stat-value.negative { color: #f97316; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 0.7rem;
+    }
+    thead {
+      background: #020617;
+    }
+    th, td {
+      padding: 0.4rem 0.35rem;
+      text-align: left;
+      border-bottom: 1px solid #1f2937;
+    }
+    th {
+      font-weight: 500;
+      color: #9ca3af;
+    }
+    td.actions {
+      white-space: nowrap;
+    }
+    .tag {
+      font-size: 0.7rem;
+      padding: 0.14rem 0.4rem;
+      border-radius: 999px;
+      background: #1f2937;
+      color: #9ca3af;
+    }
+    .tag-ski {
+      background: #064e3b;
+      color: #bbf7d0;
+    }
+    .tag-extra {
+      background: #7c2d12;
+      color: #fed7aa;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1rem;
+      }
+      th, td {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Debt Command Center</h1>
+  <div class="subtitle">
+    Track your plan, log extra expenses (like the ski trip), and see how they impact your extra-to-debt money and payoff timeline.
+  </div>
+
+  <div class="tabs">
+    <button class="tab-button active" data-tab="planTab">Plan Setup</button>
+    <button class="tab-button" data-tab="expensesTab">Expense Tracker</button>
+  </div>
+
+  <!-- PLAN SETUP CARD -->
+  <div id="planTab" class="card">
+    <div class="card-header">
+      <h2>Plan Setup</h2>
+      <span class="pill">Step 1</span>
+    </div>
+    <p style="font-size:0.85rem; color:#9ca3af; margin-top:0;">
+      These are prefilled with your current numbers. Adjust if anything changes, then press “Save Plan”.
+    </p>
+    <form id="planForm">
+      <div class="row">
+        <div class="col-4">
+          <label for="monthlyIncome">Monthly Net Income</label>
+          <input type="number" id="monthlyIncome" step="0.01" />
+        </div>
+        <div class="col-4">
+          <label for="fixedBills">Fixed Bills + Minimum Debt Payments (Monthly)</label>
+          <input type="number" id="fixedBills" step="0.01" />
+        </div>
+        <div class="col-4">
+          <label for="plannedExtra">Planned Extra to Debt (Monthly)</label>
+          <input type="number" id="plannedExtra" step="0.01" />
+        </div>
+        <div class="col-4">
+          <label for="totalDebt">Total Non-Mortgage Debt Remaining</label>
+          <input type="number" id="totalDebt" step="0.01" />
+        </div>
+      </div>
+      <button type="submit" class="primary">Save Plan</button>
+      <button type="button" class="secondary" id="resetPlanBtn">Reset to Defaults</button>
+    </form>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-label">Planned Attack Money</div>
+        <div class="stat-value" id="statPlannedAttack">$0</div>
+        <div class="stat-sub">
+          Income – Fixed bills.
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Comparison</div>
+        <div class="stat-value" id="statAttackDiff">$0</div>
+        <div class="stat-sub">
+          Difference between <strong>planned extra</strong> and mathematically available.
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Naive Months to Debt-Free</div>
+        <div class="stat-value" id="statNaiveMonths">–</div>
+        <div class="stat-sub">
+          Total non-mortgage debt / planned extra (ignores interest).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPENSE TRACKER CARD -->
+  <div id="expensesTab" class="card hidden">
+    <div class="card-header">
+      <h2>Expense Tracker & Ski Trip</h2>
+      <span class="pill">Step 2</span>
+    </div>
+    <p style="font-size:0.85rem; color:#9ca3af; margin-top:0;">
+      Log daily or weekly expenses. Choose whether each one comes out of your normal budget or from your extra-to-debt pool.
+    </p>
+    <form id="expenseForm">
+      <div class="row">
+        <div class="col-3">
+          <label for="expDate">Date</label>
+          <input type="date" id="expDate" />
+        </div>
+        <div class="col-6">
+          <label for="expDesc">Description</label>
+          <input type="text" id="expDesc" placeholder="Lift tickets, ski boots rental, gas, dinner..." />
+        </div>
+        <div class="col-3">
+          <label for="expAmount">Amount</label>
+          <input type="number" id="expAmount" step="0.01" />
+        </div>
+        <div class="col-6">
+          <label for="expCategory">Category</label>
+          <select id="expCategory">
+            <option value="Ski – Lift Tickets">Ski – Lift Tickets</option>
+            <option value="Ski – Lodging">Ski – Lodging</option>
+            <option value="Ski – Gear">Ski – Gear</option>
+            <option value="Ski – Food & Drinks">Ski – Food & Drinks</option>
+            <option value="Ski – Travel (Flights/Car)">Ski – Travel (Flights/Car)</option>
+            <option value="Travel – Gas">Travel – Gas</option>
+            <option value="Travel – Lodging">Travel – Lodging</option>
+            <option value="Food & Dining">Food & Dining</option>
+            <option value="Shopping / Gear">Shopping / Gear</option>
+            <option value="Bills / Utilities">Bills / Utilities</option>
+            <option value="Medical / Health">Medical / Health</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label for="expSource">Paid From</label>
+          <select id="expSource">
+            <option value="budget">Normal Budget</option>
+            <option value="extra">Extra-to-Debt Money</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="primary">Add Expense</button>
+      <button type="button" class="secondary" id="clearAllExpensesBtn">Clear All Expenses</button>
+    </form>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-label">This Month – Extra-to-Debt Spent</div>
+        <div class="stat-value negative" id="statExtraSpent">$0</div>
+        <div class="stat-sub">
+          From “Paid From: Extra-to-Debt”.
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Current Extra Available This Month</div>
+        <div class="stat-value positive" id="statCurrentExtra">$0</div>
+        <div class="stat-sub">
+          Planned extra – extra spent.
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Adjusted Months to Debt-Free</div>
+        <div class="stat-value" id="statAdjustedMonths">–</div>
+        <div class="stat-sub">
+          Uses current extra instead of original.
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Total Ski Trip Spend (All Time)</div>
+        <div class="stat-value" id="statSkiTotal">$0</div>
+        <div class="stat-sub">
+          All categories starting with “Ski – …”.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.1rem; font-size:1rem;">Logged Expenses</h3>
+    <div style="font-size:0.8rem; color:#9ca3af; margin-bottom:0.4rem;">
+      Showing all logged expenses. Edit or delete as needed.
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="expenseTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Paid From</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "debtCommandCenterData";
+
+  let state = {
+    plan: {
+      monthlyIncome: 12476.61,  // from pay stub
+      fixedBills: 8025.00,      // your required payments
+      plannedExtra: 4451.00,    // your attack money
+      totalDebt: 168489.00      // all non-mortgage debt
+    },
+    expenses: []                // {id, date, desc, amount, category, source}
+  };
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    recalcPlanStats();
+    recalcExpenseStats();
+  }
+
+  function loadState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.plan) state.plan = parsed.plan;
+        if (Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
+      } catch (e) {
+        console.warn("Failed to parse saved state", e);
+      }
+    }
+  }
+
+  function formatCurrency(value) {
+    if (isNaN(value) || value === null) return "$0";
+    return "$" + value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // Tabs
+  document.querySelectorAll(".tab-button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("planTab").classList.add("hidden");
+      document.getElementById("expensesTab").classList.add("hidden");
+      document.getElementById(tab).classList.remove("hidden");
+    });
+  });
+
+  // Plan form
+  const planForm = document.getElementById("planForm");
+  const monthlyIncomeInput = document.getElementById("monthlyIncome");
+  const fixedBillsInput = document.getElementById("fixedBills");
+  const plannedExtraInput = document.getElementById("plannedExtra");
+  const totalDebtInput = document.getElementById("totalDebt");
+
+  const statPlannedAttack = document.getElementById("statPlannedAttack");
+  const statAttackDiff = document.getElementById("statAttackDiff");
+  const statNaiveMonths = document.getElementById("statNaiveMonths");
+
+  function populatePlanForm() {
+    monthlyIncomeInput.value = state.plan.monthlyIncome ?? "";
+    fixedBillsInput.value = state.plan.fixedBills ?? "";
+    plannedExtraInput.value = state.plan.plannedExtra ?? "";
+    totalDebtInput.value = state.plan.totalDebt ?? "";
+  }
+
+  function recalcPlanStats() {
+    const income = Number(state.plan.monthlyIncome) || 0;
+    const fixed = Number(state.plan.fixedBills) || 0;
+    const plannedExtra = Number(state.plan.plannedExtra) || 0;
+    const totalDebt = Number(state.plan.totalDebt) || 0;
+
+    const mathematicallyAvail = Math.max(income - fixed, 0);
+    statPlannedAttack.textContent = formatCurrency(mathematicallyAvail);
+
+    const diff = plannedExtra - mathematicallyAvail;
+    const diffEl = statAttackDiff;
+    diffEl.textContent = (diff >= 0 ? "+" : "") + formatCurrency(diff).replace("$", "$");
+    diffEl.classList.remove("positive", "negative");
+    if (diff > 0.01) diffEl.classList.add("negative");
+    if (diff < -0.01) diffEl.classList.add("positive");
+
+    if (plannedExtra > 0 && totalDebt > 0) {
+      const months = totalDebt / plannedExtra;
+      statNaiveMonths.textContent = months.toFixed(1);
+    } else {
+      statNaiveMonths.textContent = "–";
+    }
+  }
+
+  planForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    state.plan.monthlyIncome = Number(monthlyIncomeInput.value) || 0;
+    state.plan.fixedBills = Number(fixedBillsInput.value) || 0;
+    state.plan.plannedExtra = Number(plannedExtraInput.value) || 0;
+    state.plan.totalDebt = Number(totalDebtInput.value) || 0;
+    saveState();
+  });
+
+  document.getElementById("resetPlanBtn").addEventListener("click", () => {
+    state.plan = {
+      monthlyIncome: 12476.61,
+      fixedBills: 8025.00,
+      plannedExtra: 4451.00,
+      totalDebt: 168489.00
+    };
+    populatePlanForm();
+    saveState();
+  });
+
+  // Expense logic
+  const expenseForm = document.getElementById("expenseForm");
+  const expDateInput = document.getElementById("expDate");
+  const expDescInput = document.getElementById("expDesc");
+  const expAmountInput = document.getElementById("expAmount");
+  const expCategoryInput = document.getElementById("expCategory");
+  const expSourceInput = document.getElementById("expSource");
+
+  const expenseTableBody = document.querySelector("#expenseTable tbody");
+
+  const statExtraSpent = document.getElementById("statExtraSpent");
+  const statCurrentExtra = document.getElementById("statCurrentExtra");
+  const statAdjustedMonths = document.getElementById("statAdjustedMonths");
+  const statSkiTotal = document.getElementById("statSkiTotal");
+
+  function addExpenseRow(expense) {
+    const tr = document.createElement("tr");
+    tr.dataset.id = expense.id;
+
+    const dateTd = document.createElement("td");
+    dateTd.textContent = expense.date || "";
+    tr.appendChild(dateTd);
+
+    const descTd = document.createElement("td");
+    descTd.textContent = expense.desc || "";
+    tr.appendChild(descTd);
+
+    const catTd = document.createElement("td");
+    const isSki = expense.category && expense.category.startsWith("Ski");
+    const catSpan = document.createElement("span");
+    catSpan.textContent = expense.category || "";
+    catSpan.className = "tag" + (isSki ? " tag-ski" : "");
+    catTd.appendChild(catSpan);
+    tr.appendChild(catTd);
+
+    const amountTd = document.createElement("td");
+    amountTd.textContent = formatCurrency(expense.amount || 0);
+    tr.appendChild(amountTd);
+
+    const sourceTd = document.createElement("td");
+    const sourceSpan = document.createElement("span");
+    const label = expense.source === "extra" ? "Extra-to-Debt" : "Budget";
+    sourceSpan.textContent = label;
+    sourceSpan.className = "tag" + (expense.source === "extra" ? " tag-extra" : "");
+    sourceTd.appendChild(sourceSpan);
+    tr.appendChild(sourceTd);
+
+    const actionsTd = document.createElement("td");
+    actionsTd.className = "actions";
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    delBtn.type = "button";
+    delBtn.className = "secondary";
+    delBtn.addEventListener("click", () => {
+      state.expenses = state.expenses.filter(e => e.id !== expense.id);
+      saveState();
+      renderExpensesTable();
+    });
+    actionsTd.appendChild(delBtn);
+    tr.appendChild(actionsTd);
+
+    expenseTableBody.appendChild(tr);
+  }
+
+  function renderExpensesTable() {
+    expenseTableBody.innerHTML = "";
+    state.expenses
+      .slice()
+      .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
+      .forEach(addExpenseRow);
+  }
+
+  function recalcExpenseStats() {
+    const plannedExtra = Number(state.plan.plannedExtra) || 0;
+    const totalDebt = Number(state.plan.totalDebt) || 0;
+
+    const now = new Date();
+    const thisMonth = now.getMonth();
+    const thisYear = now.getFullYear();
+
+    let extraSpentThisMonth = 0;
+    let skiTotal = 0;
+
+    state.expenses.forEach(e => {
+      const amount = Number(e.amount) || 0;
+      if (!amount) return;
+
+      if (e.category && e.category.startsWith("Ski")) {
+        skiTotal += amount;
+      }
+
+      if (e.date) {
+        const d = new Date(e.date + "T00:00:00");
+        if (d.getMonth() === thisMonth && d.getFullYear() === thisYear && e.source === "extra") {
+          extraSpentThisMonth += amount;
+        }
+      }
+    });
+
+    const currentExtra = Math.max(plannedExtra - extraSpentThisMonth, 0);
+
+    statExtraSpent.textContent = formatCurrency(extraSpentThisMonth);
+    statCurrentExtra.textContent = formatCurrency(currentExtra);
+
+    if (currentExtra > 0 && totalDebt > 0) {
+      const months = totalDebt / currentExtra;
+      statAdjustedMonths.textContent = months.toFixed(1);
+    } else {
+      statAdjustedMonths.textContent = "–";
+    }
+
+    statSkiTotal.textContent = formatCurrency(skiTotal);
+  }
+
+  expenseForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const amount = Number(expAmountInput.value) || 0;
+    if (!amount) return;
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const newExpense = {
+      id: "exp_" + Date.now() + "_" + Math.random().toString(16).slice(2),
+      date: expDateInput.value || todayStr,
+      desc: expDescInput.value || "",
+      amount,
+      category: expCategoryInput.value || "Other",
+      source: expSourceInput.value || "budget"
+    };
+
+    state.expenses.push(newExpense);
+    expDescInput.value = "";
+    expAmountInput.value = "";
+    expCategoryInput.value = expCategoryInput.value; // keep last cat
+    saveState();
+    renderExpensesTable();
+  });
+
+  document.getElementById("clearAllExpensesBtn").addEventListener("click", () => {
+    if (!confirm("Delete ALL logged expenses? This cannot be undone.")) return;
+    state.expenses = [];
+    saveState();
+    renderExpensesTable();
+  });
+
+  // Init
+  loadState();
+  populatePlanForm();
+  renderExpensesTable();
+  recalcPlanStats();
+  recalcExpenseStats();
+</script>
+</body>
+</html>
